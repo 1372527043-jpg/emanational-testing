@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <title>Scofield 情绪狠话助手</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+            background: #020617;
+            color: #e5e7eb;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 480px;
+            margin: 40px auto;
+            padding: 24px 20px 32px;
+            background: rgba(15, 23, 42, 0.96);
+            border-radius: 18px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+            border: 1px solid rgba(148, 163, 184, 0.7);
+        }
+        h1 {
+            text-align: center;
+            font-size: 22px;
+            margin-bottom: 4px;
+        }
+        .subtitle {
+            text-align: center;
+            font-size: 12px;
+            color: #9ca3af;
+            margin-bottom: 16px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 8px 10px;
+            border-radius: 10px;
+            border: 1px solid #4b5563;
+            background: #020617;
+            color: #e5e7eb;
+            box-sizing: border-box;
+            margin-bottom: 12px;
+        }
+        button {
+            width: 100%;
+            padding: 10px 0;
+            border-radius: 999px;
+            border: none;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            background: linear-gradient(135deg, #38bdf8, #6366f1);
+            color: #0f172a;
+            margin-bottom: 12px;
+        }
+        button:hover {
+            filter: brightness(1.08);
+        }
+        .result {
+            margin-top: 10px;
+            padding: 12px 10px;
+            border-radius: 12px;
+            border: 1px solid rgba(148, 163, 184, 0.7);
+            background: rgba(15, 23, 42, 0.9);
+            font-size: 14px;
+            white-space: pre-line;
+        }
+        .hint {
+            font-size: 11px;
+            color: #9ca3af;
+            margin-top: 12px;
+            text-align: center;
+        }
+        .mode-toggle {
+            font-size: 12px;
+            margin-bottom: 10px;
+            text-align: center;
+            color: #9ca3af;
+        }
+        .mode-toggle span {
+            cursor: pointer;
+            padding: 2px 8px;
+            border-radius: 999px;
+            border: 1px solid transparent;
+        }
+        .mode-toggle .active {
+            border-color: rgba(148,163,184,0.9);
+            color: #e5e7eb;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>情绪狠话助手</h1>
+    <div class="subtitle">Scofield 专用·0–10 自评｜输入情绪值，看系统怎么怼你</div>
+
+    <div class="mode-toggle">
+        模式：
+        <span id="mode-hard" class="active">狠话模式</span> /
+        <span id="mode-soft">冷静模式</span>
+    </div>
+
+    <label for="emotion">今天的情绪（0–10）：</label>
+    <input type="number" id="emotion" min="0" max="10" placeholder="输入一个 0 到 10 的整数">
+
+    <button onclick="evaluateEmotion()">开始审判</button>
+
+    <div id="result" class="result" style="display:none;"></div>
+
+    <div class="hint">说明：别把这个当真理，它只是帮你把情绪摊开来看一下。</div>
+</div>
+
+<script>
+    let mode = "hard"; // hard = 狠话模式, soft = 冷静模式
+
+    document.getElementById("mode-hard").addEventListener("click", function() {
+        mode = "hard";
+        this.classList.add("active");
+        document.getElementById("mode-soft").classList.remove("active");
+    });
+
+    document.getElementById("mode-soft").addEventListener("click", function() {
+        mode = "soft";
+        this.classList.add("active");
+        document.getElementById("mode-hard").classList.remove("active");
+    });
+
+    function evaluateEmotion() {
+        const input = document.getElementById("emotion");
+        const value = Number(input.value);
+        const box = document.getElementById("result");
+
+        if (isNaN(value) || value < 0 || value > 10) {
+            alert("先老老实实输入一个 0–10 的整数。");
+            return;
+        }
+
+        let text = "";
+
+        if (mode === "hard") {
+            // 狠话模式 —— 基于你原来的 Python 文本改写
+            if (value <= 3) {
+                text = "你很稳，今天要猛猛干！\n没什么好说的，直接去干活，这种状态别人做梦都想要。";
+            } else if (value <= 6) {
+                text = "又犯上小贱了？\n想想她扭头就走，把你留在原地的是谁？\n现在真正陪你往前走的是：家人、朋友，还有你自己。";
+            } else if (value <= 8) {
+                text = "我看你是真有点疯魔了。\n她根本没认真想过和你要一个未来，你却在这儿反复拷打自己？\n你不是没能力，你只是还不习惯把力气用在自己身上。";
+            } else {
+                text = "情绪直接拉爆顶了是吧？\n你以为你只配围着一个人转？别搞笑了，小老弟。\n你的价值远远比这大——现在立刻去洗脸、喝水、做 10 个俯卧撑，再回来。";
+            }
+        } else {
+            // 冷静模式
+            if (value <= 3) {
+                text = "情绪很稳，这是做事、学习、健身的黄金状态。\n现在可以选一件最重要的小事，直接去做。";
+            } else if (value <= 6) {
+                text = "有点波动，但完全在可控范围内。\n做一个 25 分钟的小任务，把注意力从脑子里拉到行动上。";
+            } else if (value <= 8) {
+                text = "情绪偏高，说明你在乎、你投入。\n先做 10 秒呼吸 + 冷水洗脸，再去写下此刻你在想什么。";
+            } else {
+                text = "情绪已经在过载区域。\n现在不要做任何关于“她”的重大决定。\n立刻：深呼吸 10 次、喝水、离开手机 5 分钟。必要时寻求朋友或专业支持。";
+            }
+        }
+
+        box.style.display = "block";
+        box.textContent = text + "\n\n------ 输出完毕，可以再调一次数 ------";
+    }
+</script>
+</body>
+</html>
